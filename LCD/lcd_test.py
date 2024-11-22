@@ -1,5 +1,6 @@
 try:
 	from RPLCD.gpio import CharLCD
+	import RPi.GPIO as GPIO
 except RuntimeError:
 	print("Error importing RPLCD!")
    
