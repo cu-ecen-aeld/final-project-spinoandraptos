@@ -15,16 +15,16 @@ def set_device():
 	print('setting up mic')
 	p = pyaudio.PyAudio()
 	while True:
-	devices = p.get_device_count()
-	for i in range(devices):
-	# Get the device info
-		device_info = p.get_device_info_by_index(i)
-		name = str(device_info.get('name'))
-		if mic_name in name:
-			DEVICE_IDX = device_info.get('index')
-			CHANNELS = device_info.get('maxInputChannels')
-			RATE = int(device_info.get('defaultSampleRate'))
-			print('mic set up successfully')
+		devices = p.get_device_count()
+		for i in range(devices):
+		# Get the device info
+			device_info = p.get_device_info_by_index(i)
+			name = str(device_info.get('name'))
+			if mic_name in name:
+				DEVICE_IDX = device_info.get('index')
+				CHANNELS = device_info.get('maxInputChannels')
+				RATE = int(device_info.get('defaultSampleRate'))
+				print('mic set up successfully')
                 
 
 # Continuous stream is broken down into chunks 
