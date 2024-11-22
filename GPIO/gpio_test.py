@@ -1,7 +1,7 @@
 try:
-    import RPi.GPIO as GPIO
+	import RPi.GPIO as GPIO
 except RuntimeError:
-    print("Error importing RPi.GPIO!  This is probably because you need superuser privileges.  You can achieve this by using 'sudo' to run your script")
+	print("Error importing RPi.GPIO!  This is probably because you need superuser privileges.  You can achieve this by using 'sudo' to run your script")
     
 # Set GPIO mode as using Broadcom SOC
 # Use BCM pin 17 for push button
