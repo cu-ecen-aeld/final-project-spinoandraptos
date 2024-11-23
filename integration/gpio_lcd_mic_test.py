@@ -62,46 +62,48 @@ for i in range(devices):
 		print(CHANNELS)
 		print(RATE)
 		print('mic set up successfully')
+	
+def button_event():
 
-# Button press event
-def button_pressed():
-	lcd.cursor_pos = (1, 0) 
-	lcd.write_string(u'Recording audio!')
-	recording = True
-	
-	# Input stream initiation
-	stream = p.open(format=FORMAT,
-	    channels=CHANNELS,
-	    rate=RATE,
-	    input_device_index=DEVICE_IDX,
-	    input=True,
-	    frames_per_buffer=CHUNK)
-
-	print("* recording")
-	
-# Button press event
-def button_released():
-	lcd.cursor_pos = (1, 0) 
-	lcd.write_string(u'Done recording!')
-	recording = False
-	
-	stream.stop_stream()
-	stream.close()
-	p.terminate()
-
-	wf = wave.open(OUTPUT_PATH, 'wb')
-	wf.setnchannels(CHANNELS)
-	wf.setsampwidth(p.get_sample_size(FORMAT))
-	wf.setframerate(RATE)
-	wf.writeframes(b''.join(frames))
-	wf.close()
-	print("Saved")
-	
-	lcd.cursor_pos = (0, 0) 
-	lcd.write_string(u'Press to Record!')
+	#Rising edge
+	if GPIO.input(PUSH_BUTTON):
+		lcd.cursor_pos = (1, 0) 
+		lcd.write_string(u'Recording audio!')
+		recording = True
 		
-GPIO.add_event_detect(PUSH_BUTTON, GPIO.RISING, callback=button_pressed, bouncetime=200)
-GPIO.add_event_detect(PUSH_BUTTON, GPIO.FALLING, callback=button_released, bouncetime=200)		
+		# Input stream initiation
+		stream = p.open(format=FORMAT,
+		    channels=CHANNELS,
+		    rate=RATE,
+		    input_device_index=DEVICE_IDX,
+		    input=True,
+		    frames_per_buffer=CHUNK)
+
+		print("* recording")
+		
+	#Falling edge
+	else:
+		lcd.cursor_pos = (1, 0) 
+		lcd.write_string(u'Done recording!')
+		recording = False
+		print("* stop recording")
+		
+		stream.stop_stream()
+		stream.close()
+		p.terminate()
+
+		wf = wave.open(OUTPUT_PATH, 'wb')
+		wf.setnchannels(CHANNELS)
+		wf.setsampwidth(p.get_sample_size(FORMAT))
+		wf.setframerate(RATE)
+		wf.writeframes(b''.join(frames))
+		wf.close()
+		print("Saved")
+		
+		lcd.cursor_pos = (0, 0) 
+		lcd.write_string(u'Press to Record!')
+		
+GPIO.add_event_detect(PUSH_BUTTON, GPIO.BOTH, callback=button_event, bouncetime=200)		
 	
 while recording:
 	data = stream.read(CHUNK, exception_on_overflow=False)
