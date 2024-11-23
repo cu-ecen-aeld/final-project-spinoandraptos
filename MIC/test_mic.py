@@ -75,4 +75,4 @@ def record_audio(output_path:str):
     
 if __name__ == '__main__':
 	set_device()
-	record_audio()
+	record_audio(output_path)
