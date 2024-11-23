@@ -20,6 +20,8 @@ def set_device():
 		# Get the device info
 			device_info = p.get_device_info_by_index(i)
 			name = str(device_info.get('name'))
+			print("NAME:")
+			print(name)
 			if mic_name in name:
 				DEVICE_IDX = device_info.get('index')
 				CHANNELS = device_info.get('maxInputChannels')
@@ -70,6 +72,8 @@ def record_audio(output_path:str):
 	wf.setframerate(RATE)
 	wf.writeframes(b''.join(frames))
 	wf.close()
+	
+	print("Saved")
     
 if __name__ == '__main__':
 	set_device()
