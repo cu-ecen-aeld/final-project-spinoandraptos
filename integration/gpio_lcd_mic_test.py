@@ -105,9 +105,10 @@ def button_event():
 		
 GPIO.add_event_detect(PUSH_BUTTON, GPIO.BOTH, callback=button_event, bouncetime=200)		
 	
-while recording:
-	data = stream.read(CHUNK, exception_on_overflow=False)
-	frames.append(data)
+while true:
+	if recording:
+		data = stream.read(CHUNK, exception_on_overflow=False)
+		frames.append(data)
 
 
 
