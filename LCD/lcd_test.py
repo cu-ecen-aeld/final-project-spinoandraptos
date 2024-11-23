@@ -10,10 +10,10 @@ lcd = CharLCD(cols=16, rows=2, pin_rs=37, pin_e=35, pins_data=[33, 31, 29, 23],
 
 # Set cursor position to the top row and print "DUMMY"
 print("printing: Dummy")
-lcd.cursor_pos = (0, 3) 
+lcd.cursor_pos = (0, 0) 
 lcd.write_string(u'DUMMY:')
 
 # Set cursor position to the bottom row and print "Dummy Value"
 print("printing: Dummy value")
-lcd.cursor_pos = (1, 3) 
-lcd.write_string(u'Score: Dummy Value')
+lcd.cursor_pos = (1, 0) 
+lcd.write_string(u'Score: Dummy')
