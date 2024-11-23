@@ -19,7 +19,7 @@ lcd.write_string(u'Button Status:')
 
 # Constantly check for button press
 while True:
-	buttonPressed = GPIO.input(17)
+	buttonPressed = GPIO.input(11)
 	if buttonPressed:
 		print("Button Pressed")
 		lcd.cursor_pos = (1, 0) 
