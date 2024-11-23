@@ -89,7 +89,6 @@ def button_event(channel):
 		recording = False
 		print("* stop recording")
 		
-		global stream
 		stream.stop_stream()
 		stream.close()
 		p.terminate()
