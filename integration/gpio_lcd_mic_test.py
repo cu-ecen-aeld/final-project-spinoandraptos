@@ -72,7 +72,8 @@ def button_event(channel):
 		recording = True
 		
 		# Input stream initiation
-		global stream = p.open(format=FORMAT,
+		global stream 
+		stream = p.open(format=FORMAT,
 		    channels=CHANNELS,
 		    rate=RATE,
 		    input_device_index=DEVICE_IDX,
