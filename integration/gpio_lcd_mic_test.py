@@ -18,7 +18,7 @@ try:
 except RuntimeError:
 	print("Error importing wave!")
 	
-from time import time
+from time import sleep
 
 PUSH_BUTTON = 11
 
@@ -63,7 +63,7 @@ for i in range(devices):
 		print(RATE)
 		print('mic set up successfully')
 	
-def button_event():
+def button_event(channel):
 
 	#Rising edge
 	if GPIO.input(PUSH_BUTTON):
@@ -99,7 +99,8 @@ def button_event():
 		wf.writeframes(b''.join(frames))
 		wf.close()
 		print("Saved")
-		
+	    	sleep(5) 
+
 		lcd.cursor_pos = (0, 0) 
 		lcd.write_string(u'Press to Record!')
 		
