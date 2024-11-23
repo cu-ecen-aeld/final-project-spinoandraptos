@@ -8,10 +8,21 @@ try:
 except RuntimeError:
 	print("Error importing pyaudio!")
 
+# Continuous stream is broken down into chunks 
+# Buffer sample size for each chunk to lighten processing workload
+# Prevents memory leak with small RAM in embedded systems
+CHUNK = 1024
+# 16 bit signed int for binary sound representation
+FORMAT = pyaudio.paInt16
+# Duration of recording
+RECORD_SECONDS = 5
+output_path = "/tmp/test.wav"
 DEVICE_IDX, CHANNELS, RATE = None, None, None
 mic_name = 'USB PnP Sound Device'
 
-def set_device():
+   
+if __name__ == '__main__':
+
 	print('setting up mic')
 	p = pyaudio.PyAudio()
 
@@ -24,28 +35,18 @@ def set_device():
 			DEVICE_IDX = device_info.get('index')
 			CHANNELS = device_info.get('maxInputChannels')
 			RATE = int(device_info.get('defaultSampleRate'))
+			print(DEVICE_IDX)
+			print(CHANNELS)
+			print(RATE)
 			print('mic set up successfully')
-                
-
-# Continuous stream is broken down into chunks 
-# Buffer sample size for each chunk to lighten processing workload
-# Prevents memory leak with small RAM in embedded systems
-CHUNK = 1024
-# 16 bit signed int for binary sound representation
-FORMAT = pyaudio.paInt16
-# Duration of recording
-RECORD_SECONDS = 5
-
-output_path = "/tmp/test.wav"
-
-def record_audio(output_path:str):
+			
 	# Port audio initiation
 	p = pyaudio.PyAudio()
 	# Input stream initiation
 	stream = p.open(format=FORMAT,
 		    channels=CHANNELS,
 		    rate=RATE,
-		    input_device_index  = DEVICE_IDX,
+		    input_device_index=DEVICE_IDX,
 		    input=True,
 		    frames_per_buffer=CHUNK)
 
@@ -72,7 +73,3 @@ def record_audio(output_path:str):
 	wf.close()
 	
 	print("Saved")
-    
-if __name__ == '__main__':
-	set_device()
-	record_audio(output_path)
