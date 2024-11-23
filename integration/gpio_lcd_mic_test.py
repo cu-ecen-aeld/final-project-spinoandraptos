@@ -99,7 +99,7 @@ def button_event(channel):
 		wf.writeframes(b''.join(frames))
 		wf.close()
 		print("Saved")
-	    	sleep(5) 
+		sleep(5) 
 
 		lcd.cursor_pos = (0, 0) 
 		lcd.write_string(u'Press to Record!')
