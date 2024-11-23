@@ -6,7 +6,7 @@ except RuntimeError:
 try:
 	import wave
 except RuntimeError:
-	print("Error importing pyaudio!")
+	print("Error importing wave!")
 
 # Continuous stream is broken down into chunks 
 # Buffer sample size for each chunk to lighten processing workload
