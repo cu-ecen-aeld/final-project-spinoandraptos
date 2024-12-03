@@ -27,10 +27,14 @@ try:
 	import whisper
 except RuntimeError:
 	print("Error importing whisper!")
-	
+
+import random
 from time import sleep
 from pyaline import lookup_phonemes_score
 
+TEST_WORDS = ["Backpack", "Book","Bookcase","Bottle","Chair", "Clock", "Desk", "Door", "Flag", "Laptop", "Apple", "Banana", "Bed", "Bowl", "Box", "Bread", "Glasses", "Umbrella", "Lantern", "Scissors", "Bicycle", "Cupboard", "Cabbage"]
+
+reference_word = random.choice(TEST_WORDS)
 
 PUSH_BUTTON = 11
 
@@ -44,6 +48,8 @@ lcd = CharLCD(cols=16, rows=2, pin_rs=37, pin_e=35, pins_data=[33, 31, 29, 23],
               
 lcd.cursor_pos = (0, 0) 
 lcd.write_string(u'Press to Record!')
+lcd.cursor_pos = (1, 0) 
+lcd.write_string(reference_word)
 
 # Continuous stream is broken down into chunks 
 # Buffer sample size for each chunk to lighten processing workload
@@ -76,7 +82,6 @@ for i in range(devices):
 		print('mic set up successfully')
 
 arpabet = cmudict.dict()
-reference_word = "laptop" #dummy word for testing: laptop
 
 def recurse_find_phoneme(s, arpabet):
         if s in arpabet:
@@ -162,9 +167,12 @@ def button_event(channel):
 		lcd.write_string(u'Score:')
 		lcd.write_string(str(score))
 		sleep(5)
-
+		
+		reference_word = random.choice(TEST_WORDS)
 		lcd.cursor_pos = (0, 0) 
 		lcd.write_string(u'Press to Record!')
+		lcd.cursor_pos = (1, 0) 
+		lcd.write_string(reference_word)
 		
 GPIO.add_event_detect(PUSH_BUTTON, GPIO.BOTH, callback=button_event, bouncetime=200)		
 	
