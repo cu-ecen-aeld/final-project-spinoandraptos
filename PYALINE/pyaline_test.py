@@ -1,5 +1,6 @@
 try:
-	import cmudict
+	#import cmudict
+	from nltk.corpus import cmudict
 except RuntimeError:
 	print("Error importing cmudict!")
 	
