@@ -1,6 +1,6 @@
 try:
-	#import cmudict
-	from nltk.corpus import cmudict
+	import cmudict
+	from nltk.corpus import words
 except RuntimeError:
 	print("Error importing cmudict!")
 	
