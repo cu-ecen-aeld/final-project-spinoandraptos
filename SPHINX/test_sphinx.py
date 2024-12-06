@@ -1,5 +1,5 @@
 try:
-	from pocketsphinx import Decoder
+	from pocketsphinx import Audiofile
 except RuntimeError:
 	print("Error importing pocketsphinx!")
 try:
@@ -8,10 +8,15 @@ except RuntimeError:
 	print("Error importing wave!")
 
 AUDIO_PATH = "/tmp/test.wav"
+       
+# Create an AudioFile object
+audio = AudioFile(
+    audio_file=AUDIO_PATH,  # Replace with your audio file path
+)
 
-with wave.open(AUDIO_PATH, "rb") as audio:
-    decoder = Decoder(samprate=audio.getframerate())
-    decoder.start_utt()
-    decoder.process_raw(audio.getfp().read(), full_utt=True)
-    decoder.end_utt()
-    print(decoder.hyp().hypstr)
+# Iterate over the audio file and get recognized text
+for phrase in audio:
+    hypothesis = str(phrase)
+    print(hypothesis)
+    
+   
