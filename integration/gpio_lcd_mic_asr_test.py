@@ -79,7 +79,7 @@ for i in range(devices):
 		print(RATE)
 		print('mic set up successfully')
 
-ict = []
+dictionary = []
 comment_string="#"	
 with open('cmudict.dict', 'r') as f:
 	parts = []
@@ -89,10 +89,10 @@ with open('cmudict.dict', 'r') as f:
 		else:
 			parts = line.strip().split()
 			thing = re.sub(r"\(\d+\)$", "", parts[0])
-			dict.append((thing, parts[1:]))
+			dictionary.append((thing, parts[1:]))
 
 cmudict = defaultdict(list)
-for key, value in dict:
+for key, value in dictionary:
 	cmudict[key].append(value)
 
 def recurse_find_phoneme(s, arpabet):
