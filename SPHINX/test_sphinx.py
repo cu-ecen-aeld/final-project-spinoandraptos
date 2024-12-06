@@ -1,5 +1,5 @@
 try:
-	from pocketsphinx import Audiofile
+	from pocketsphinx import AudioFile
 except RuntimeError:
 	print("Error importing pocketsphinx!")
 try:
