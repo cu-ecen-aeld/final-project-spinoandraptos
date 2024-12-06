@@ -127,12 +127,11 @@ def grade_phonemes(transcription, arpabet, reference_word):
 
 	return total_phoneme_score * 100
 
-# Create an AudioFile object
-audio = AudioFile(
-    audio_file=OUTPUT_PATH,  # Replace with your audio file path
-)
-
 def get_transcription():
+	# Create an AudioFile object
+	audio = AudioFile(
+	    audio_file=OUTPUT_PATH,  # Replace with your audio file path
+	)
 	transcription = ""
 	# Iterate over the audio file and get recognized text
 	for phrase in audio:
