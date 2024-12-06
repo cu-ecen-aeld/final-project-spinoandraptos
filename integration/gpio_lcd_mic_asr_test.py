@@ -19,18 +19,16 @@ except RuntimeError:
 	print("Error importing wave!")
 	
 try:
-	import cmudict
+	from pocketsphinx import AudioFile
 except RuntimeError:
-	print("Error importing cmudict!")
-	
-try:
-	import whisper
-except RuntimeError:
-	print("Error importing whisper!")
+	print("Error importing pocketsphinx!")
 
 import random
 from time import sleep
 from pyaline import lookup_phonemes_score
+import re
+from collections import defaultdict
+from itertools import product as iterprod
 
 TEST_WORDS = ["Backpack", "Book","Bookcase","Bottle","Chair", "Clock", "Desk", "Door", "Flag", "Laptop", "Apple", "Banana", "Bed", "Bowl", "Box", "Bread", "Glasses", "Umbrella", "Lantern", "Scissors", "Bicycle", "Cupboard", "Cabbage"]
 
@@ -81,19 +79,33 @@ for i in range(devices):
 		print(RATE)
 		print('mic set up successfully')
 
-arpabet = cmudict.dict()
+ict = []
+comment_string="#"	
+with open('cmudict.dict', 'r') as f:
+	parts = []
+	for line in f:
+		if comment_string:
+    			parts = line.strip().split(comment_string)[0].split()
+		else:
+			parts = line.strip().split()
+			thing = re.sub(r"\(\d+\)$", "", parts[0])
+			dict.append((thing, parts[1:]))
+
+cmudict = defaultdict(list)
+for key, value in dict:
+	cmudict[key].append(value)
 
 def recurse_find_phoneme(s, arpabet):
-        if s in arpabet:
-            return arpabet.get(s)
-        middle = len(s)/2
-        partition = sorted(list(range(len(s))), key=lambda x: (x-middle)**2-x)
-        for i in partition:
-            pre, suf = (s[:i], s[i:])
-            if pre in arpabet and recurse_find_phoneme(suf) is not None:
-                return [x+y for x,y in iterprod(arpabet[pre], recurse_find_phoneme(suf))]
-                
-def grade_phonemes(transcription, arpabet):
+	if s in arpabet:
+		return arpabet.get(s)
+	middle = len(s)/2
+	partition = sorted(list(range(len(s))), key=lambda x: (x-middle)**2-x)
+	for i in partition:
+		pre, suf = (s[:i], s[i:])
+		if pre in arpabet and recurse_find_phoneme(suf, arpabet) is not None:
+			return [x+y for x,y in iterprod(arpabet[pre], recurse_find_phoneme(suf, arpabet))]
+
+def grade_phonemes(transcription, arpabet, reference_word):
 	total_phoneme_score = 0
 	ref_phonemes = arpabet.get(reference_word) 
 	print("Ref phonemes", ref_phonemes)
@@ -104,22 +116,29 @@ def grade_phonemes(transcription, arpabet):
 		user_phonemes = recurse_find_phoneme(transcription, arpabet)
 		print("User Phenomes", user_phonemes)
 		for i in range(len(ref_phonemes[0])):
-		        if i < len(user_phonemes[0]):
+			if i < len(user_phonemes[0]):
 				ref_phoneme = ref_phonemes[0][i]
 				ref_phoneme = ''.join([i for i in ref_phoneme if not i.isdigit()])
 				user_phoneme = user_phonemes[0][i]
 				user_phoneme = ''.join([i for i in user_phoneme if not i.isdigit()])
 				distance = lookup_phonemes_score(user_phoneme, ref_phoneme)
 				total_phoneme_score += distance
-				total_phoneme_score = total_phoneme_score/len(ref_phonemes[0]) * 100
-				
-	return total_phoneme_score
-	
-def get_transcription(audio_path):
-	model = whisper.load_model('tiny')
-	result = model.transcribe(audio=AUDIO_PATH, language='en', verbose=True)
-	transcription = result.get('text', '')
-	print("Transcription: ", transcription)
+				total_phoneme_score = total_phoneme_score/len(ref_phonemes[0]) 
+
+	return total_phoneme_score * 100
+
+# Create an AudioFile object
+audio = AudioFile(
+    audio_file=OUTPUT_PATH,  # Replace with your audio file path
+)
+
+def get_transcription():
+	transcription = ""
+	# Iterate over the audio file and get recognized text
+	for phrase in audio:
+		hypothesis = str(phrase)
+		transcription = transcription + hypothesis + " "
+	print(transcription)	
 	return transcription
 		
 def button_event(channel):
@@ -160,11 +179,15 @@ def button_event(channel):
 		wf.close()
 		print("Saved")
 		
-		transcription = get_transcription(OUTPUT_PATH)
-		score = grade_phonemes(transcription, arpabet)
+		lcd.cursor_pos = (0, 0) 
+		lcd.write_string(u'Processing!')
+		transcription = get_transcription()
+		score = grade_phonemes(transcription, cmudict, reference_word)
+		score = round(score, 2) 
 
 		lcd.cursor_pos = (0, 0) 
 		lcd.write_string(u'Score:')
+		lcd.cursor_pos = (0, 6) 
 		lcd.write_string(str(score))
 		sleep(5)
 		

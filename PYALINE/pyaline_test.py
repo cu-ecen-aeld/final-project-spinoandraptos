@@ -38,18 +38,18 @@ def grade_phonemes(transcription, arpabet, reference_word):
 dict = []
 comment_string="#"	
 with open('cmudict.dict', 'r') as f:
-    parts = []
-    for line in f:
-        if comment_string:
-            parts = line.strip().split(comment_string)[0].split()
-        else:
-            parts = line.strip().split()
-        thing = re.sub(r"\(\d+\)$", "", parts[0])
-        dict.append((thing, parts[1:]))
+	parts = []
+	for line in f:
+		if comment_string:
+    			parts = line.strip().split(comment_string)[0].split()
+		else:
+			parts = line.strip().split()
+			thing = re.sub(r"\(\d+\)$", "", parts[0])
+			dict.append((thing, parts[1:]))
 
 cmudict = defaultdict(list)
 for key, value in dict:
-    cmudict[key].append(value)
+	cmudict[key].append(value)
 
 reference_word = "library"
 transcription = "leebwary"
