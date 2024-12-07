@@ -136,7 +136,6 @@ def button_event(channel):
 	if GPIO.input(PUSH_BUTTON):
 		lcd.cursor_pos = (0, 0) 
 		lcd.write_string(u'Recording audio!')
-		recording = True
 		
 		# Input stream initiation
 		global stream 
@@ -146,7 +145,8 @@ def button_event(channel):
 		    input_device_index=DEVICE_IDX,
 		    input=True,
 		    frames_per_buffer=CHUNK)
-
+		
+		recording = True
 		print("* recording")
 		
 	#Falling edge
