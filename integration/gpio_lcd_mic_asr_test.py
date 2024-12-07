@@ -129,7 +129,9 @@ def grade_phonemes(transcription, arpabet, reference_word):
 	return total_phoneme_score * 100
 
 def button_event(channel):
-
+	global recording
+	global processing_audio
+	
 	#Rising edge
 	if GPIO.input(PUSH_BUTTON):
 		lcd.cursor_pos = (0, 0) 
@@ -165,14 +167,15 @@ def button_event(channel):
 		wf.writeframes(b''.join(frames))
 		wf.close()
 		print("Saved")
-		
-		processing_audio =  True
+	
+		processing_audio = True
 		print("Processing starts")
 		
 		
 GPIO.add_event_detect(PUSH_BUTTON, GPIO.BOTH, callback=button_event, bouncetime=200)		
 	
 while True:
+	print(processing_audio)
 	if recording:
 		data = stream.read(CHUNK, exception_on_overflow=False)
 		frames.append(data)
