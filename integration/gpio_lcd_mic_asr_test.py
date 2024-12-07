@@ -61,6 +61,7 @@ mic_name = 'USB PnP Sound Device'
 recording = False
 frames = []
 stream = None
+processing_audio = False
 
 print('setting up mic')
 p = pyaudio.PyAudio()
@@ -165,9 +166,18 @@ def button_event(channel):
 		wf.close()
 		print("Saved")
 		
+		processing_audio =  True
+		
+		
+GPIO.add_event_detect(PUSH_BUTTON, GPIO.BOTH, callback=button_event, bouncetime=200)		
+	
+while True:
+	if recording:
+		data = stream.read(CHUNK, exception_on_overflow=False)
+		frames.append(data)
+	if processing_audio:
 		lcd.cursor_pos = (0, 0) 
 		lcd.write_string(u'Processing!')
-		# Create an AudioFile object
 		audio = AudioFile(
 		    audio_file=OUTPUT_PATH,  # Replace with your audio file path
 		)
@@ -192,12 +202,7 @@ def button_event(channel):
 		lcd.cursor_pos = (1, 0) 
 		lcd.write_string(reference_word)
 		
-GPIO.add_event_detect(PUSH_BUTTON, GPIO.BOTH, callback=button_event, bouncetime=200)		
-	
-while True:
-	if recording:
-		data = stream.read(CHUNK, exception_on_overflow=False)
-		frames.append(data)
+		processing_audio =  False
 
 
 
