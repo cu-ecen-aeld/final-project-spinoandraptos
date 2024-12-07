@@ -108,6 +108,7 @@ def recurse_find_phoneme(s, arpabet):
 
 def grade_phonemes(transcription, arpabet, reference_word):
 	total_phoneme_score = 0
+	print("Reference:", reference_word)
 	ref_phonemes = arpabet.get(reference_word) 
 	print("Ref phonemes", ref_phonemes)
 	
@@ -175,7 +176,6 @@ def button_event(channel):
 GPIO.add_event_detect(PUSH_BUTTON, GPIO.BOTH, callback=button_event, bouncetime=200)		
 	
 while True:
-	print(processing_audio)
 	if recording:
 		data = stream.read(CHUNK, exception_on_overflow=False)
 		frames.append(data)
@@ -183,7 +183,7 @@ while True:
 	elif processing_audio:
 		print('Processing!')
 		lcd.cursor_pos = (0, 0) 
-		lcd.write_string(u'Processing!')
+		lcd.write_string(u'Processing!     ')
 		audio = AudioFile(
 		    audio_file=OUTPUT_PATH,  # Replace with your audio file path
 		)
@@ -198,6 +198,7 @@ while True:
 		score = round(score, 2) 
 
 		lcd.cursor_pos = (0, 0) 
+		lcd.write_string(u'                ')
 		lcd.write_string(u'Score:')
 		lcd.cursor_pos = (0, 6) 
 		lcd.write_string(str(score))
