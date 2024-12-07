@@ -41,5 +41,19 @@ while True:
 			[bag_of_words.append(seg.word) for seg in decoder.seg() if seg.word not in buzz_words]
 			decoder.end_utt()
 			decoder.start_utt()
+			
+def get_transcription():
+	# Create an AudioFile object
+	audio = AudioFile(
+	    audio_file=OUTPUT_PATH,  # Replace with your audio file path
+	)
+	transcription = ""
+	# Iterate over the audio file and get recognized text
+	for phrase in audio:
+		hypothesis = str(phrase)
+		transcription = transcription + hypothesis + " "
+	print(transcription)	
+	return transcription
+		
     
    

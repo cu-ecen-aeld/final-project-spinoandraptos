@@ -127,19 +127,6 @@ def grade_phonemes(transcription, arpabet, reference_word):
 
 	return total_phoneme_score * 100
 
-def get_transcription():
-	# Create an AudioFile object
-	audio = AudioFile(
-	    audio_file=OUTPUT_PATH,  # Replace with your audio file path
-	)
-	transcription = ""
-	# Iterate over the audio file and get recognized text
-	for phrase in audio:
-		hypothesis = str(phrase)
-		transcription = transcription + hypothesis + " "
-	print(transcription)	
-	return transcription
-		
 def button_event(channel):
 
 	#Rising edge
@@ -180,7 +167,16 @@ def button_event(channel):
 		
 		lcd.cursor_pos = (0, 0) 
 		lcd.write_string(u'Processing!')
-		transcription = get_transcription()
+		# Create an AudioFile object
+		audio = AudioFile(
+		    audio_file=OUTPUT_PATH,  # Replace with your audio file path
+		)
+		transcription = ""
+		# Iterate over the audio file and get recognized text
+		for phrase in audio:
+			hypothesis = str(phrase)
+			transcription = transcription + hypothesis + " "
+		print(transcription)	
 		score = grade_phonemes(transcription, cmudict, reference_word)
 		score = round(score, 2) 
 
