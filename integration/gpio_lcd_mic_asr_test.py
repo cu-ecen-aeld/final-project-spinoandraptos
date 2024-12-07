@@ -167,6 +167,7 @@ def button_event(channel):
 		print("Saved")
 		
 		processing_audio =  True
+		print("Processing starts")
 		
 		
 GPIO.add_event_detect(PUSH_BUTTON, GPIO.BOTH, callback=button_event, bouncetime=200)		
@@ -175,7 +176,9 @@ while True:
 	if recording:
 		data = stream.read(CHUNK, exception_on_overflow=False)
 		frames.append(data)
-	if processing_audio:
+		
+	elif processing_audio:
+		print('Processing!')
 		lcd.cursor_pos = (0, 0) 
 		lcd.write_string(u'Processing!')
 		audio = AudioFile(
@@ -187,6 +190,7 @@ while True:
 			hypothesis = str(phrase)
 			transcription = transcription + hypothesis + " "
 		print(transcription)	
+		
 		score = grade_phonemes(transcription, cmudict, reference_word)
 		score = round(score, 2) 
 
