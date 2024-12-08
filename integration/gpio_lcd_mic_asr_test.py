@@ -38,7 +38,7 @@ PUSH_BUTTON = 13
 
 GPIO.setmode(GPIO.BOARD)
 GPIO.setwarnings(True)
-GPIO.setup(PUSH_BUTTON, GPIO.IN)
+GPIO.setup(PUSH_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 # Write to LCD in 8-bit data mode
 lcd = CharLCD(cols=16, rows=2, pin_rs=37, pin_e=35, pins_data=[33, 31, 29, 23],
@@ -183,7 +183,7 @@ def button_event(channel):
 		print("Processing starts")
 		
 		
-GPIO.add_event_detect(PUSH_BUTTON, GPIO.BOTH, callback=button_event, bouncetime=200)		
+GPIO.add_event_detect(PUSH_BUTTON, GPIO.BOTH, callback=button_event, bouncetime=500)		
 	
 while True:
 	if recording:
@@ -208,16 +208,18 @@ while True:
 
 		lcd.cursor_pos = (0, 0) 
 		lcd.write_string(u'                ')
+		lcd.cursor_pos = (0, 0) 
 		lcd.write_string(u'Score:')
-		lcd.cursor_pos = (0, 6) 
+		lcd.cursor_pos = (0, 7) 
 		lcd.write_string(str(score))
-		sleep(5)
+		sleep(10)
 		
 		reference_word = random.choice(TEST_WORDS)
 		lcd.cursor_pos = (0, 0) 
 		lcd.write_string(u'Press to Record!')
 		lcd.cursor_pos = (1, 0) 
 		lcd.write_string(u'                ')
+		lcd.cursor_pos = (1, 0) 
 		lcd.write_string(reference_word)
 		
 		processing_audio =  False
