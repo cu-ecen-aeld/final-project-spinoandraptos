@@ -38,7 +38,7 @@ PUSH_BUTTON = 11
 
 GPIO.setmode(GPIO.BOARD)
 GPIO.setwarnings(True)
-GPIO.setup(PUSH_BUTTON, GPIO.IN)
+GPIO.setup(PUSH_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 # Write to LCD in 8-bit data mode
 lcd = CharLCD(cols=16, rows=2, pin_rs=37, pin_e=35, pins_data=[33, 31, 29, 23],
@@ -109,6 +109,7 @@ def recurse_find_phoneme(s, arpabet):
 def grade_phonemes(transcription, arpabet, reference_word):
 	total_phoneme_score = 0
 	print("Reference:", reference_word)
+	print("Transcription:", transcription)
 	ref_phonemes = arpabet.get(reference_word) 
 	print("Ref phonemes", ref_phonemes)
 	
@@ -173,7 +174,7 @@ def button_event(channel):
 		print("Processing starts")
 		
 		
-GPIO.add_event_detect(PUSH_BUTTON, GPIO.BOTH, callback=button_event, bouncetime=200)		
+GPIO.add_event_detect(PUSH_BUTTON, GPIO.BOTH, callback=button_event, bouncetime=500)		
 	
 while True:
 	if recording:
@@ -192,9 +193,8 @@ while True:
 		for phrase in audio:
 			hypothesis = str(phrase)
 			transcription = transcription + hypothesis + " "
-		print(transcription)	
-		
-		score = grade_phonemes(transcription, cmudict, reference_word)
+				
+		score = grade_phonemes(str(transcription), cmudict, reference_word)
 		score = round(score, 2) 
 
 		lcd.cursor_pos = (0, 0) 
@@ -208,6 +208,7 @@ while True:
 		lcd.cursor_pos = (0, 0) 
 		lcd.write_string(u'Press to Record!')
 		lcd.cursor_pos = (1, 0) 
+		lcd.write_string(u'                ')
 		lcd.write_string(reference_word)
 		
 		processing_audio =  False
