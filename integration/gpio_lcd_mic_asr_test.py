@@ -45,9 +45,8 @@ lcd = CharLCD(cols=16, rows=2, pin_rs=37, pin_e=35, pins_data=[33, 31, 29, 23],
               numbering_mode=GPIO.BOARD)
               
 lcd.cursor_pos = (0, 0) 
-lcd.write_string(u'Press to Record!')
-lcd.cursor_pos = (1, 0) 
-lcd.write_string(reference_word)
+lcd.write_string(u'Loading...')
+
 
 # Continuous stream is broken down into chunks 
 # Buffer sample size for each chunk to lighten processing workload
@@ -95,6 +94,11 @@ with open('cmudict.dict', 'r') as f:
 cmudict = defaultdict(list)
 for key, value in dictionary:
 	cmudict[key].append(value)
+	
+lcd.cursor_pos = (0, 0) 
+lcd.write_string(u'Press to Record!')
+lcd.cursor_pos = (1, 0) 
+lcd.write_string(reference_word)
 
 def recurse_find_phoneme(s, arpabet):
 	if s in arpabet:
@@ -112,6 +116,11 @@ def grade_phonemes(transcription, arpabet, reference_word):
 	print("Transcription:", transcription)
 	ref_phonemes = arpabet.get(reference_word) 
 	print("Ref phonemes", ref_phonemes)
+	
+	# Edge Condition : When user input contains multiple words, join together into one word
+	transcription = transcription.strip()
+	if " " in transcription:
+		transcription = transcription.replace(" ", "")
 	
 	if transcription == reference_word:
 		total_phoneme_score = 100 #full marks
