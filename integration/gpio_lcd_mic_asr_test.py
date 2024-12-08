@@ -34,7 +34,7 @@ TEST_WORDS = ["backpack", "book","bookcase","bottle","chair", "clock", "desk", "
 
 reference_word = random.choice(TEST_WORDS)
 
-PUSH_BUTTON = 11
+PUSH_BUTTON = 13
 
 GPIO.setmode(GPIO.BOARD)
 GPIO.setwarnings(True)
@@ -174,7 +174,7 @@ def button_event(channel):
 		print("Processing starts")
 		
 		
-GPIO.add_event_detect(PUSH_BUTTON, GPIO.BOTH, callback=button_event, bouncetime=300)		
+GPIO.add_event_detect(PUSH_BUTTON, GPIO.BOTH, callback=button_event, bouncetime=200)		
 	
 while True:
 	if recording:
