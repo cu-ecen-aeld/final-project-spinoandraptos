@@ -147,8 +147,8 @@ def button_event(channel):
 	if GPIO.input(PUSH_BUTTON):
 		lcd.cursor_pos = (0, 0) 
 		lcd.write_string(u'Recording audio!')
-		global p 
-		p = pyaudio.PyAudio()
+		global frames
+		frames = []
 		# Input stream initiation
 		global stream 
 		stream = p.open(format=FORMAT,
@@ -170,7 +170,6 @@ def button_event(channel):
 		
 		stream.stop_stream()
 		stream.close()
-		p.terminate()
 
 		wf = wave.open(OUTPUT_PATH, 'wb')
 		wf.setnchannels(CHANNELS)
