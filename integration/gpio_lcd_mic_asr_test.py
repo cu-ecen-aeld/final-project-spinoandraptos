@@ -78,6 +78,7 @@ for i in range(devices):
 		print(CHANNELS)
 		print(RATE)
 		print('mic set up successfully')
+p.terminate()
 
 dictionary = []
 comment_string="#"	
@@ -151,6 +152,8 @@ def button_event(channel):
 		frames = []
 		# Input stream initiation
 		global stream 
+		global p
+		p = pyaudio.PyAudio()
 		stream = p.open(format=FORMAT,
 		    channels=CHANNELS,
 		    rate=RATE,
@@ -170,6 +173,7 @@ def button_event(channel):
 		
 		stream.stop_stream()
 		stream.close()
+		p.terminate()
 
 		wf = wave.open(OUTPUT_PATH, 'wb')
 		wf.setnchannels(CHANNELS)
