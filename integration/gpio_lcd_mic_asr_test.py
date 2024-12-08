@@ -30,7 +30,7 @@ import re
 from collections import defaultdict
 from itertools import product as iterprod
 
-TEST_WORDS = ["Backpack", "Book","Bookcase","Bottle","Chair", "Clock", "Desk", "Door", "Flag", "Laptop", "Apple", "Banana", "Bed", "Bowl", "Box", "Bread", "Glasses", "Umbrella", "Lantern", "Scissors", "Bicycle", "Cupboard", "Cabbage"]
+TEST_WORDS = ["backpack", "book","bookcase","bottle","chair", "clock", "desk", "door", "flag", "laptop", "apple", "banana", "bed", "bowl", "box", "bread", "glasses", "umbrella", "lantern", "scissors", "bicycle", "cupboard", "cabbage"]
 
 reference_word = random.choice(TEST_WORDS)
 
@@ -83,14 +83,14 @@ for i in range(devices):
 dictionary = []
 comment_string="#"	
 with open('cmudict.dict', 'r') as f:
-	parts = []
-	for line in f:
-		if comment_string:
-    			parts = line.strip().split(comment_string)[0].split()
-		else:
-			parts = line.strip().split()
-			thing = re.sub(r"\(\d+\)$", "", parts[0])
-			dictionary.append((thing, parts[1:]))
+    for line in f:
+        parts = []
+        if comment_string in line:
+            parts = line.strip().split(comment_string)[0].split()
+        else:
+            parts = line.strip().split()
+            thing = re.sub(r"\(\d+\)$", "", parts[0])
+            dictionary.append((thing, parts[1:]))
 
 cmudict = defaultdict(list)
 for key, value in dictionary:

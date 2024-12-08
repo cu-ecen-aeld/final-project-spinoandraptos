@@ -35,24 +35,24 @@ def grade_phonemes(transcription, arpabet, reference_word):
 
 	return total_phoneme_score * 100
 	
-dict = []
+dictionary = []
 comment_string="#"	
 with open('cmudict.dict', 'r') as f:
-	parts = []
-	for line in f:
-		if comment_string:
-    			parts = line.strip().split(comment_string)[0].split()
-		else:
-			parts = line.strip().split()
-			thing = re.sub(r"\(\d+\)$", "", parts[0])
-			dict.append((thing, parts[1:]))
+    for line in f:
+        parts = []
+        if comment_string in line:
+            parts = line.strip().split(comment_string)[0].split()
+        else:
+            parts = line.strip().split()
+            thing = re.sub(r"\(\d+\)$", "", parts[0])
+            dictionary.append((thing, parts[1:]))
 
 cmudict = defaultdict(list)
-for key, value in dict:
+for key, value in dictionary:
 	cmudict[key].append(value)
 
-reference_word = "library"
-transcription = "leebwary"
+reference_word = "book"
+transcription = "mm"
 score = grade_phonemes(transcription, cmudict, reference_word)
 print(score)
 	
