@@ -79,6 +79,7 @@ for i in range(devices):
 		print(RATE)
 		print('mic set up successfully')
 p.terminate()
+p = None
 
 dictionary = []
 comment_string="#"	
