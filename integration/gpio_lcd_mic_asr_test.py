@@ -30,6 +30,60 @@ import re
 from collections import defaultdict
 from itertools import product as iterprod
 
+def recurse_find_phoneme(s, arpabet):
+	if s in arpabet:
+		return arpabet.get(s)
+	middle = len(s)/2
+	partition = sorted(list(range(len(s))), key=lambda x: (x-middle)**2-x)
+	for i in partition:
+		pre, suf = (s[:i], s[i:])
+		if pre in arpabet and recurse_find_phoneme(suf, arpabet) is not None:
+			return [x+y for x,y in iterprod(arpabet[pre], recurse_find_phoneme(suf, arpabet))]
+
+def grade_phonemes(transcription, arpabet, reference_word):
+	total_phoneme_score = 0
+	print("Reference:", reference_word)
+	print("Transcription:", transcription)
+	ref_phonemes = arpabet.get(reference_word) 
+	print("Ref phonemes", ref_phonemes)
+	
+	# Edge Condition : When user input contains multiple words, join together into one word
+	transcription = transcription.strip()
+	if " " in transcription:
+		transcription = transcription.replace(" ", "")
+	
+	if transcription == reference_word:
+		total_phoneme_score = 100 #full marks
+	else:
+		user_phonemes = recurse_find_phoneme(transcription, arpabet)
+		print("User Phenomes", user_phonemes)
+		for i in range(len(ref_phonemes[0])):
+			if i < len(user_phonemes[0]):
+				ref_phoneme = ref_phonemes[0][i]
+				ref_phoneme = ''.join([i for i in ref_phoneme if not i.isdigit()])
+				user_phoneme = user_phonemes[0][i]
+				user_phoneme = ''.join([i for i in user_phoneme if not i.isdigit()])
+				distance = lookup_phonemes_score(user_phoneme, ref_phoneme)
+				total_phoneme_score += distance
+				total_phoneme_score = total_phoneme_score/len(ref_phonemes[0]) 
+
+	return total_phoneme_score * 100
+
+start_recording = False
+stop_recording = False
+
+def button_event(channel):
+	
+	#Rising edge
+	if GPIO.input(PUSH_BUTTON):
+		global start_recording
+		start_recording = True
+		
+	#Falling edge
+	else:
+		global stop_recording
+		stop_recording = True
+		
 TEST_WORDS = ["backpack", "book","bookcase","bottle","chair", "clock", "desk", "door", "flag", "laptop", "apple", "banana", "bed", "bowl", "box", "bread", "glasses", "umbrella", "lantern", "scissors", "bicycle", "cupboard", "cabbage"]
 
 reference_word = random.choice(TEST_WORDS)
@@ -57,10 +111,6 @@ FORMAT = pyaudio.paInt16
 OUTPUT_PATH = "/tmp/test.wav"
 DEVICE_IDX, CHANNELS, RATE = None, None, None
 mic_name = 'USB PnP Sound Device'
-recording = False
-frames = []
-stream = None
-processing_audio = False
 
 print('setting up mic')
 p = pyaudio.PyAudio()
@@ -101,59 +151,18 @@ lcd.cursor_pos = (0, 0)
 lcd.write_string(u'Press to Record!')
 lcd.cursor_pos = (1, 0) 
 lcd.write_string(reference_word)
-
-def recurse_find_phoneme(s, arpabet):
-	if s in arpabet:
-		return arpabet.get(s)
-	middle = len(s)/2
-	partition = sorted(list(range(len(s))), key=lambda x: (x-middle)**2-x)
-	for i in partition:
-		pre, suf = (s[:i], s[i:])
-		if pre in arpabet and recurse_find_phoneme(suf, arpabet) is not None:
-			return [x+y for x,y in iterprod(arpabet[pre], recurse_find_phoneme(suf, arpabet))]
-
-def grade_phonemes(transcription, arpabet, reference_word):
-	total_phoneme_score = 0
-	print("Reference:", reference_word)
-	print("Transcription:", transcription)
-	ref_phonemes = arpabet.get(reference_word) 
-	print("Ref phonemes", ref_phonemes)
 	
-	# Edge Condition : When user input contains multiple words, join together into one word
-	transcription = transcription.strip()
-	if " " in transcription:
-		transcription = transcription.replace(" ", "")
+GPIO.add_event_detect(PUSH_BUTTON, GPIO.BOTH, callback=button_event, bouncetime=500)	
+recording = False
+frames = []
+stream = None	
 	
-	if transcription == reference_word:
-		total_phoneme_score = 100 #full marks
-	else:
-		user_phonemes = recurse_find_phoneme(transcription, arpabet)
-		print("User Phenomes", user_phonemes)
-		for i in range(len(ref_phonemes[0])):
-			if i < len(user_phonemes[0]):
-				ref_phoneme = ref_phonemes[0][i]
-				ref_phoneme = ''.join([i for i in ref_phoneme if not i.isdigit()])
-				user_phoneme = user_phonemes[0][i]
-				user_phoneme = ''.join([i for i in user_phoneme if not i.isdigit()])
-				distance = lookup_phonemes_score(user_phoneme, ref_phoneme)
-				total_phoneme_score += distance
-				total_phoneme_score = total_phoneme_score/len(ref_phonemes[0]) 
-
-	return total_phoneme_score * 100
-
-def button_event(channel):
-	global recording
-	global processing_audio
-	
-	#Rising edge
-	if GPIO.input(PUSH_BUTTON):
+while True:
+	if start_recording:
 		lcd.cursor_pos = (0, 0) 
 		lcd.write_string(u'Recording audio!')
-		global frames
 		frames = []
 		# Input stream initiation
-		global stream 
-		global p
 		p = pyaudio.PyAudio()
 		stream = p.open(format=FORMAT,
 		    channels=CHANNELS,
@@ -161,12 +170,11 @@ def button_event(channel):
 		    input_device_index=DEVICE_IDX,
 		    input=True,
 		    frames_per_buffer=CHUNK)
-		
+		start_recording = False
 		recording = True
 		print("* recording")
-		
-	#Falling edge
-	else:
+		    
+	elif stop_recording:
 		lcd.cursor_pos = (0, 0) 
 		lcd.write_string(u'Done recording!')
 		recording = False
@@ -184,19 +192,7 @@ def button_event(channel):
 		wf.close()
 		print("Saved")
 	
-		processing_audio = True
 		print("Processing starts")
-		
-		
-GPIO.add_event_detect(PUSH_BUTTON, GPIO.BOTH, callback=button_event, bouncetime=500)		
-	
-while True:
-	if recording:
-		data = stream.read(CHUNK, exception_on_overflow=False)
-		frames.append(data)
-		
-	elif processing_audio:
-		print('Processing!')
 		lcd.cursor_pos = (0, 0) 
 		lcd.write_string(u'Processing!     ')
 		audio = AudioFile(
@@ -227,7 +223,11 @@ while True:
 		lcd.cursor_pos = (1, 0) 
 		lcd.write_string(reference_word)
 		
-		processing_audio =  False
+		stop_recording =  False
+		
+	elif recording:
+		data = stream.read(CHUNK, exception_on_overflow=False)
+		frames.append(data)
 
 
 
